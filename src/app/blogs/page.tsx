@@ -11,7 +11,6 @@ export default function BlogsPage() {
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     console.log(`Navigated to page ${page}`);
-    // Logic to fetch new page data goes here
   };
 
   return (
@@ -28,7 +27,6 @@ export default function BlogsPage() {
           />
         </div>
 
-        {/* Blog Grid */}
         <div className="grid gap-8 px-4 sm:grid-cols-2 lg:grid-cols-3">
           <Card />
           <Card />
