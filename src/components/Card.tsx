@@ -1,18 +1,30 @@
-export default function Card(){
-    return(
-        <div className="card bg-base-100 w-96 shadow-xl">
+type CardProps = {
+    imageUrl: string;
+    title: string;
+    description: string;
+    onClick: () => void;
+  };
+  
+  export default function Card({ imageUrl, title, description, onClick }: CardProps) {
+    return (
+      <div className="card bg-base-100 w-96 shadow-xl">
         <figure>
-            <img
-            src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp"
-            alt="Shoes" />
+          <img
+            src={imageUrl}
+            alt={title}
+            className="w-full h-48 object-cover"
+          />
         </figure>
         <div className="card-body">
-            <h2 className="card-title">Shoes!</h2>
-            <p>If a dog chews shoes whose shoes does he choose?</p>
-            <div className="card-actions justify-end">
-            <button className="btn btn-primary">Buy Now</button>
-            </div>
+          <h2 className="card-title">{title}</h2>
+          <p>{description}</p>
+          <div className="card-actions justify-end">
+            <button className="btn btn-primary" onClick={onClick}>
+              Read More
+            </button>
+          </div>
         </div>
-        </div>
-    )
-}
+      </div>
+    );
+  }
+  

@@ -10,6 +10,12 @@ export interface AuthResponse {
     user: User
 }
 
+export interface AuthContextType {
+    user: User | null;
+    login: (userData: User) => void;
+    logout: () => void;
+}
+
 export interface Comment {
     id: string;
     user: string;
@@ -18,11 +24,18 @@ export interface Comment {
 }
 
 export interface Blog{
-    id: string;
+    _id: string;
     title: string;
     content: string;
     imageUrl?: string;
     author: string;
     createdAt: string;
+    likes: number;
+    comments: [
+        user: string,
+        comment: string,
+        createdAt: string
+    ];
+
 
 }
