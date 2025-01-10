@@ -31,11 +31,7 @@ export interface Blog{
     author: string;
     createdAt: string;
     likes: number;
-    comments: [
-        user: string,
-        comment: string,
-        createdAt: string
-    ];
+    comments?: {user: string, content: string}[];
 
 
 }

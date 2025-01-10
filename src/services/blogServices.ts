@@ -30,3 +30,13 @@ export const searchBlogs = async (query: string): Promise<Blog[]> => {
     return [];
   }
 };
+
+export const fetchBlogById = async (id: string): Promise<Blog> => {
+  try {
+    const response = await apiClient.get<Blog>(`api/blog/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching blog details:", error);
+    throw error; // Propagate error to handle in the component
+  }
+};
