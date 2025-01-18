@@ -6,6 +6,12 @@ import { Blog } from "@/types";
 //     return response.data;
 // }
 
+interface CreateBlogPayload{
+  title: string;
+  content: string;
+  image?: File;
+}
+
 export const fetchBlogs = async (): Promise<Blog[]> => {
     try {
       const response = await apiClient.get<Blog[]>("api/blog");
@@ -38,5 +44,37 @@ export const fetchBlogById = async (id: string): Promise<Blog> => {
   } catch (error) {
     console.error("Error fetching blog details:", error);
     throw error; // Propagate error to handle in the component
+  }
+};
+
+export const fetchUserBlogs = async (): Promise<Blog[]> =>{
+  try{
+    const response = await apiClient.get<Blog[]>("/api/blog/user");
+    return response.data;
+  } catch (error){
+    console.error("Error fetching user's blogs:", error);
+    return [];
+  }
+}
+
+
+export const createBlog = async (payload: CreateBlogPayload): Promise<Blog> => {
+  const formData = new FormData();
+  formData.append("title", payload.title);
+  formData.append("content", payload.content);
+  if (payload.image) {
+    formData.append("image", payload.image);
+  }
+
+  try {
+    const response = await apiClient.post<Blog>("/api/blog/create", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error creating blog:", error);
+    throw error;
   }
 };

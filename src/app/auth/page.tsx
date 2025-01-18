@@ -9,9 +9,9 @@ export default function AuthPage() {
   const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
   const { loginUser, registerUser } = useAuthActions();
 
-  const handleLogin = async (formData: { email: string; password: string }) => {
+  const handleLogin = async (formData: { username: string, email: string; password: string }) => {
     try {
-      await loginUser(formData.email, formData.password);
+      await loginUser(formData.username, formData.email, formData.password);
       console.log("Login successful!");
       // Redirect to another page or display a success message
     } catch (error) {

@@ -2,9 +2,9 @@ import apiClient from "./axiosClient";
 import { AuthResponse } from "@/types";
 
 // login service
-export const login = async (email: string, password: string): Promise<AuthResponse> => {
-    console.log("Login Payload:", { email, password }); // Debug the payload
-    const response = await apiClient.post<AuthResponse>("api/auth/signin", {email, password});
+export const login = async (username: string, email: string, password: string): Promise<AuthResponse> => {
+    console.log("Login Payload:", { username, email, password }); // Debug the payload
+    const response = await apiClient.post<AuthResponse>("api/auth/signin", {username, email, password});
     console.log("Login Response:", response.data); // Debug response
 
     return response.data

@@ -1,5 +1,6 @@
 
 export interface User{
+    username:string;
     id: string;
     email: string;
     password: string;
@@ -7,7 +8,8 @@ export interface User{
 
 export interface AuthResponse {
     token: string;
-    user: User
+    username: string;
+    email: string;
 }
 
 export interface AuthContextType {
