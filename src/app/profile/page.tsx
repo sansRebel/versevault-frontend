@@ -2,15 +2,21 @@
 
 import { useEffect, useState } from "react";
 import Button from "@/components/Button";
-import Card from "@/components/Card";
+import Form from "@/components/Form";
 import { fetchUserBlogs } from "@/services/blogServices";
+import { updateUser, deleteUser } from "@/services/userServices";
 import { Blog } from "@/types";
-import { getUserDetails } from "@/utils/user";
+import { getUserDetails, removeUserDetails } from "@/utils/user";
+import { removeToken } from "@/utils/token";
+import { useRouter } from "next/navigation";
+import Card from "@/components/Card";
 
 export default function ProfilePage() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [user, setUser] = useState<{ username: string; email: string } | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const initializeUser = async () => {
@@ -18,21 +24,16 @@ export default function ProfilePage() {
       setUser(userDetails);
 
       if (userDetails) {
-        const loadUserBlogs = async () => {
-          setLoading(true); // Start loading
-          try {
-            const userBlogs = await fetchUserBlogs();
-            setBlogs(userBlogs); // Set blogs data
-          } catch (error) {
-            console.error("Error fetching user's blogs:", error);
-          } finally {
-            setLoading(false); // Stop loading
-          }
-        };
-
-        await loadUserBlogs(); // Call the function
+        try {
+          const userBlogs = await fetchUserBlogs();
+          setBlogs(userBlogs);
+        } catch (error) {
+          console.error("Error fetching user's blogs:", error);
+        } finally {
+          setLoading(false);
+        }
       } else {
-        setLoading(false); // Stop loading if no user is logged in
+        setLoading(false);
       }
     };
 
@@ -40,11 +41,37 @@ export default function ProfilePage() {
   }, []);
 
   const handleEditAccount = () => {
-    console.log("Edit clicked");
+    setIsEditing(true);
   };
 
-  const handleDeleteAccount = () => {
-    console.log("Delete clicked");
+  const handleUpdateAccount = async (formData: { [key: string]: string }) => {
+    try {
+      const { username, email, password } = formData;
+      const updatedUser = await updateUser({ username, email, password });
+
+      // Update local state and storage
+      setUser({ username: updatedUser.user.username, email: updatedUser.user.email });
+      alert("Account updated successfully!");
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Error updating account:", error);
+      alert("Failed to update account.");
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+      try {
+        await deleteUser();
+        // Clear local storage and redirect
+        removeToken();
+        removeUserDetails();
+        router.push("/auth");
+      } catch (error) {
+        console.error("Error deleting account:", error);
+        alert("Failed to delete account.");
+      }
+    }
   };
 
   if (!user) {
@@ -63,6 +90,31 @@ export default function ProfilePage() {
             <Button label="Delete Account" styleType="danger" onClick={handleDeleteAccount} />
           </div>
         </div>
+
+        {/* Edit Form */}
+        {isEditing && (
+          <div className="max-w-md mx-auto mb-8">
+            <h2 className="text-2xl font-bold text-center mb-4">Edit Account</h2>
+            <Form
+              fields={[
+                { name: "username", label: "Username", type: "text", value: user.username },
+                { name: "email", label: "Email", type: "email", value: user.email },
+                { name: "password", label: "Password", type: "password", placeholder: "New password (optional)" },
+              ]}
+              onSubmit={(formData) => {
+                const filteredData = Object.entries(formData).reduce<{ [key: string]: string }>((acc, [key, value]) => {
+                  if (typeof value === "string") {
+                    acc[key] = value; // Include only string fields
+                  }
+                  return acc;
+                }, {});
+                handleUpdateAccount(filteredData); // Call the function with filtered data
+              }}
+              buttonText="Save Changes"
+            />
+
+          </div>
+        )}
 
         {/* User Blogs */}
         <div>
