@@ -6,52 +6,47 @@ import { useAuth } from "@/context/AuthContext";
 export const useAuthActions = () => {
   const { login: setUser, logout: clearUser } = useAuth();
 
-  const loginUser = async (name: string, email: string, password: string) => {
+  const loginUser = async (username: string, email: string, password: string) => {
     try {
-      const { token, username, email: userEmail } = await login(name, email, password);
+      const { token, username: fetchedUsername, email: fetchedEmail } = await login(username, email, password);
 
-      // Store token, username, and email in local storage
       setToken(token);
-      setUserDetails(username, userEmail);
+      setUserDetails(fetchedUsername, fetchedEmail);
 
-      // Optionally update state for logged-in user
       setUser({
-          username, email: userEmail,
-          id: "",
-          password: ""
+        username: fetchedUsername,
+        email: fetchedEmail,
+        id: "",
+        password: "",
       });
     } catch (error) {
-      console.error("Error during login:", error);
-      throw error; // Allow error handling in the component
+      console.error("Login error:", error); // Optionally log this once here
+      throw new Error("Login failed");
     }
   };
 
   const registerUser = async (username: string, email: string, password: string) => {
     try {
-      const { token, username: newUsername, email: newEmail } = await register(username, email, password);
+      const { token, username: fetchedUsername, email: fetchedEmail } = await register(username, email, password);
 
-      // Store token, username, and email in local storage
       setToken(token);
-      setUserDetails(newUsername, newEmail);
+      setUserDetails(fetchedUsername, fetchedEmail);
 
-      // Optionally update state for registered user
       setUser({
-          username: newUsername, email: newEmail,
-          id: "",
-          password: ""
+        username: fetchedUsername,
+        email: fetchedEmail,
+        id: "",
+        password: "",
       });
     } catch (error) {
-      console.error("Error during registration:", error);
-      throw error; // Allow error handling in the component
+      console.error("Registration error:", error); // Optionally log this once here
+      throw new Error("Registration failed");
     }
   };
 
   const logoutUser = () => {
-    // Clear token and user details from local storage
     removeToken();
     removeUserDetails();
-
-    // Optionally update state for logged-out user
     clearUser();
   };
 

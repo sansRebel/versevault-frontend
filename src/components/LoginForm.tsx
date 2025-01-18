@@ -1,43 +1,19 @@
 "use client";
-import Form from "./Form";
+import Form from "@/components/Form";
 
-type LoginFormProps = {
-  onSubmit: (FormData: {username: string, email: string, password: string}) => void;
+type LoginFormData = {
+  username: string;
+  email: string;
+  password: string;
 };
 
-export default function LoginForm({onSubmit}: LoginFormProps) {
+export default function LoginForm({ onSubmit }: { onSubmit: (formData: LoginFormData) => void }) {
   const fields = [
-
-    {
-      name: "username",
-      label: "User Name",
-      type: "username",
-      placeholder: "Enter your name",
-      required: false,
-    },
-    {
-      name: "email",
-      label: "Email",
-      type: "email",
-      placeholder: "Enter your email",
-      required: true,
-    },
-    {
-      name: "password",
-      label: "Password",
-      type: "password",
-      placeholder: "Enter your password",
-      required: true,
-    },
+    { name: "usrname", label: "User Name", type: "username", placeholder: "Enter your name", required: false },
+    { name: "email", label: "Email", type: "email", placeholder: "Enter your email", required: true },
+    { name: "password", label: "Password", type: "password", placeholder: "Enter your password", required: true },
   ];
-  const handleSubmit = (formData: { [key: string]: string }) => {
-    // Ensure the object is type-safe
-    onSubmit({
-      username: formData.username || "",
-      email: formData.email || "",
-      password: formData.password || "",
-    });
-  }
 
-  return <Form fields={fields} onSubmit={handleSubmit} buttonText="Login" />
+  return <Form<LoginFormData> fields={fields} onSubmit={onSubmit} buttonText="Login" />;
 }
+
