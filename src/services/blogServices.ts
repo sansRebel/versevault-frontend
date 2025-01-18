@@ -78,3 +78,41 @@ export const createBlog = async (payload: CreateBlogPayload): Promise<Blog> => {
     throw error;
   }
 };
+
+export const likeBlog = async (id: string): Promise<number> => {
+  try {
+    const response = await apiClient.post(`/api/blog/${id}/like`);
+    return response.data.likes; // Return updated likes count
+  } catch (error) {
+    console.error("Error liking blog:", error);
+    throw error;
+  }
+};
+
+export const commentOnBlog = async (id: string, comment: string): Promise<void> => {
+  try {
+    await apiClient.post(`/api/blog/${id}/comment`, { comment });
+  } catch (error) {
+    console.error("Error commenting on blog:", error);
+    throw error;
+  }
+};
+
+export const editBlog = async (id: string, data: { title?: string; content?: string }): Promise<Blog> => {
+  try {
+    const response = await apiClient.put<Blog>(`/api/blog/${id}`, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error editing blog:", error);
+    throw error;
+  }
+};
+
+export const deleteBlog = async (id: string): Promise<void> => {
+  try {
+    await apiClient.delete(`/api/blog/${id}`);
+  } catch (error) {
+    console.error("Error deleting blog:", error);
+    throw error;
+  }
+};
