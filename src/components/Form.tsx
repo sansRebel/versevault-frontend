@@ -4,36 +4,36 @@ import { useState } from "react";
 type FormField = {
   name: string;
   label: string;
-  type: string; // e.g., "text", "email", "password", etc.
+  type: string | "file";
   placeholder?: string;
   value?: string;
   required?: boolean;
 };
 
-type FormProps<T extends Record<string, string>> = {
+type FormProps<T extends Record<string, string | File | null>> = {
   fields: FormField[];
   onSubmit: (formData: T) => void;
   buttonText: string;
 };
 
-export default function Form<T extends Record<string, string>>({
+export default function Form<T extends Record<string, string | File | null>>({
   fields,
   onSubmit,
   buttonText,
 }: FormProps<T>) {
   const [formData, setFormData] = useState<T>(
     fields.reduce((acc, field) => {
-      // Assert that the field value or fallback is a string assignable to T[keyof T]
-      acc[field.name as keyof T] = (field.value || "") as T[keyof T];
+      acc[field.name as keyof T] =
+        field.type === "file" ? (null as T[keyof T]) : ((field.value || "") as T[keyof T]);
       return acc;
     }, {} as T)
   );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const { name, type, value, files } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value as T[keyof T],
+      [name]: type === "file" ? (files?.[0] || null) : value,
     }));
   };
 
@@ -45,15 +45,16 @@ export default function Form<T extends Record<string, string>>({
   return (
     <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
       {fields.map((field) => (
-        <label key={field.name} className="input input-bordered flex items-center gap-2">
+        <label key={field.name} className="flex flex-col gap-2">
+          <span className="font-medium">{field.label}</span>
           <input
             name={field.name}
             type={field.type}
             placeholder={field.placeholder}
-            value={formData[field.name as keyof T] as string}
+            value={field.type !== "file" ? (formData[field.name as keyof T] as string) : undefined}
             onChange={handleChange}
             required={field.required}
-            className="grow"
+            className="input input-bordered"
           />
         </label>
       ))}

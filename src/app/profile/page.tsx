@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import Card from "@/components/Card";
 import Toast from "@/components/Toast"; // Toast component
 import Modal from "@/components/Modal"; // Modal component
+import { useAuthActions } from "@/hooks/useAuth";
 
 export default function ProfilePage() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
@@ -23,6 +24,7 @@ export default function ProfilePage() {
   );
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null); // Toast state
   const router = useRouter();
+  const {logoutUser} =useAuthActions();
 
   const showToast = (message: string, type: "success" | "error") => {
     setToast({ message, type });
@@ -142,10 +144,27 @@ export default function ProfilePage() {
           <h1 className="text-4xl font-bold mb-2">{user.username}</h1>
           <p className="text-lg mb-4">{user.email}</p>
           <div className="flex justify-center gap-4">
-            <Button label="Edit Account" styleType="primary" onClick={() => console.log("Edit account clicked")} />
-            <Button label="Delete Account" styleType="danger" onClick={handleDeleteAccount} />
+            <Button
+              label="Edit Account"
+              styleType="primary"
+              onClick={() => console.log("Edit account clicked")}
+            />
+            <Button
+              label="Delete Account"
+              styleType="danger"
+              onClick={handleDeleteAccount}
+            />
+            <Button
+              label="Sign Out"
+              styleType="secondary"
+              onClick={() => {
+                logoutUser();
+                router.push("/auth"); // Redirect to login page
+              }}
+            />
           </div>
         </div>
+
 
         {/* Edit Blog Form */}
         {isEditing && editingBlog && (
@@ -162,9 +181,18 @@ export default function ProfilePage() {
           </div>
         )}
 
+
+
         {/* User Blogs */}
         <div>
           <h2 className="text-2xl font-bold text-center mb-8">My Blogs</h2>
+          <div className="text-center mb-8">
+            <Button
+              label="Post a Blog"
+              styleType="primary"
+              onClick={() => (window.location.href = "/blogs/new")}
+            />
+          </div>
           {loading ? (
             <div className="text-center">Loading blogs...</div>
           ) : blogs.length > 0 ? (
@@ -187,10 +215,10 @@ export default function ProfilePage() {
           ) : (
             <div className="text-center">
               <p className="mb-4">You havent posted any blogs yet.</p>
-              <Button label="Post a Blog" styleType="primary" onClick={() => (window.location.href = "/blogs/new")} />
             </div>
           )}
         </div>
+
       </section>
     </div>
   );
