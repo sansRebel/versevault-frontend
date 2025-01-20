@@ -1,20 +1,31 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { fetchBlogById, likeBlog, commentOnBlog } from "@/services/blogServices";
 import { Blog } from "@/types";
 import Button from "@/components/Button";
+import Modal from "@/components/Modal"; // Import the Modal component
 import { getUserDetails } from "@/utils/user";
 
 export default function BlogDetailsPage() {
   const { id } = useParams();
+  const router = useRouter();
   const [blog, setBlog] = useState<Blog | null>(null);
   const [likes, setLikes] = useState<number>(0);
   const [newComment, setNewComment] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [modal, setModal] = useState<{ isOpen: boolean; title: string; message: string } | null>(null);
   const user = getUserDetails();
+
+  const openModal = (title: string, message: string) => {
+    setModal({ isOpen: true, title, message });
+  };
+
+  const closeModal = () => {
+    setModal(null);
+  };
 
   useEffect(() => {
     if (!id) return;
@@ -23,7 +34,7 @@ export default function BlogDetailsPage() {
       try {
         const blogDetails = await fetchBlogById(id as string);
         setBlog(blogDetails);
-        setLikes(blogDetails.likes); // Initialize likes count
+        setLikes(blogDetails.likes);
       } catch (err) {
         setError("Failed to load blog details.");
         console.error(err);
@@ -37,13 +48,13 @@ export default function BlogDetailsPage() {
 
   const handleLike = async () => {
     if (!user) {
-      alert("You must be logged in to like a blog.");
+      openModal("Login Required", "You must be logged in to like a blog.");
       return;
     }
 
     try {
       const updatedLikes = await likeBlog(id as string);
-      setLikes(updatedLikes); // Update likes in the state
+      setLikes(updatedLikes);
     } catch {
       alert("Failed to like the blog.");
     }
@@ -51,7 +62,7 @@ export default function BlogDetailsPage() {
 
   const handleComment = async () => {
     if (!user) {
-      alert("You must be logged in to comment on a blog.");
+      openModal("Login Required", "You must be logged in to comment on a blog.");
       return;
     }
 
@@ -66,7 +77,7 @@ export default function BlogDetailsPage() {
         ...prevBlog!,
         comments: [...(prevBlog?.comments || []), { user: user.username, content: newComment.trim() }],
       }));
-      setNewComment(""); // Clear comment input
+      setNewComment("");
     } catch {
       alert("Failed to post the comment.");
     }
@@ -86,6 +97,20 @@ export default function BlogDetailsPage() {
 
   return (
     <div className="min-h-screen bg-base-100">
+      {/* Modal */}
+      {modal && (
+        <Modal
+          title={modal.title}
+          message={modal.message}
+          isOpen={modal.isOpen}
+          onClose={closeModal}
+          onConfirm={() => {
+            closeModal();
+            router.push("/auth"); // Redirect to the login page
+          }}
+        />
+      )}
+
       <section className="py-8">
         {/* Blog Header */}
         <header className="mb-8">

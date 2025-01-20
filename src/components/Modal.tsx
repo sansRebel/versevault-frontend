@@ -22,7 +22,7 @@ export default function Modal({ title, message, isOpen, onClose, onConfirm }: Mo
           </button>
           {onConfirm && (
             <button className="btn btn-primary" onClick={onConfirm}>
-              Confirm
+              Log in
             </button>
           )}
         </div>
