@@ -1,5 +1,7 @@
 "use client";
+
 import { useState } from "react";
+import Button from "@/components/Button";
 
 type FormField = {
   name: string;
@@ -43,10 +45,10 @@ export default function Form<T extends Record<string, string | File | null>>({
   };
 
   return (
-    <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+    <form className="flex flex-col gap-6 p-6 bg-white shadow-md rounded-lg" onSubmit={handleSubmit}>
       {fields.map((field) => (
         <label key={field.name} className="flex flex-col gap-2">
-          <span className="font-medium">{field.label}</span>
+          <span className="font-medium text-gray-700">{field.label}</span>
           <input
             name={field.name}
             type={field.type}
@@ -54,13 +56,11 @@ export default function Form<T extends Record<string, string | File | null>>({
             value={field.type !== "file" ? (formData[field.name as keyof T] as string) : undefined}
             onChange={handleChange}
             required={field.required}
-            className="input input-bordered"
+            className="input input-bordered px-4 py-2 rounded-lg shadow-sm focus:ring-2 focus:ring-primary transition-all"
           />
         </label>
       ))}
-      <button type="submit" className="btn btn-primary">
-        {buttonText}
-      </button>
+      <Button label={buttonText} type="submit" styleType="primary" />
     </form>
   );
 }
