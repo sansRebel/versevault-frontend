@@ -26,6 +26,7 @@ export interface Comment {
 }
 
 export interface Blog{
+    likedBy: string;
     _id: string;
     title: string;
     content: string;

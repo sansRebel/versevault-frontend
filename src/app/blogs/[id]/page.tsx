@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { fetchBlogById, likeBlog, commentOnBlog } from "@/services/blogServices";
+import { fetchBlogById, likeBlog, unlikeBlog, commentOnBlog } from "@/services/blogServices";
 import { Blog } from "@/types";
 import Button from "@/components/Button";
-import Modal from "@/components/Modal"; // Import the Modal component
+import Modal from "@/components/Modal";
 import { getUserDetails } from "@/utils/user";
 
 export default function BlogDetailsPage() {
@@ -13,6 +13,7 @@ export default function BlogDetailsPage() {
   const router = useRouter();
   const [blog, setBlog] = useState<Blog | null>(null);
   const [likes, setLikes] = useState<number>(0);
+  const [likedByUser, setLikedByUser] = useState<boolean>(false);
   const [newComment, setNewComment] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -29,12 +30,18 @@ export default function BlogDetailsPage() {
 
   useEffect(() => {
     if (!id) return;
+  
     const loadBlog = async () => {
       setLoading(true);
       try {
         const blogDetails = await fetchBlogById(id as string);
         setBlog(blogDetails);
         setLikes(blogDetails.likes);
+  
+        // Check if the user has already liked the blog
+        if (user && blogDetails.likedBy.includes(user.username)) {
+          setLikedByUser(true);
+        }
       } catch (err) {
         setError("Failed to load blog details.");
         console.error(err);
@@ -42,21 +49,29 @@ export default function BlogDetailsPage() {
         setLoading(false);
       }
     };
-
+  
     loadBlog();
-  }, [id]);
+  }, [id]); // Dependency array includes only `id`
+  
 
-  const handleLike = async () => {
+  const handleLikeToggle = async () => {
     if (!user) {
-      openModal("Login Required", "You must be logged in to like a blog.");
+      openModal("Login Required", "You must be logged in to like or unlike a blog.");
       return;
     }
 
     try {
-      const updatedLikes = await likeBlog(id as string);
-      setLikes(updatedLikes);
+      if (likedByUser) {
+        const updatedLikes = await unlikeBlog(id as string);
+        setLikes(updatedLikes);
+        setLikedByUser(false);
+      } else {
+        const updatedLikes = await likeBlog(id as string);
+        setLikes(updatedLikes);
+        setLikedByUser(true);
+      }
     } catch {
-      alert("Failed to like the blog.");
+      alert("Failed to update like status.");
     }
   };
 
@@ -106,7 +121,7 @@ export default function BlogDetailsPage() {
           onClose={closeModal}
           onConfirm={() => {
             closeModal();
-            router.push("/auth"); // Redirect to the login page
+            router.push("/auth");
           }}
         />
       )}
@@ -129,12 +144,18 @@ export default function BlogDetailsPage() {
         {/* Blog Content */}
         <article className="px-4 lg:px-24">
           <p className="text-lg mb-8">{blog.content}</p>
-          <p className="text-lg">Author: <strong>{blog.author}</strong></p>
+          <p className="text-lg">
+            Author: <strong>{blog.author}</strong>
+          </p>
         </article>
 
         {/* Actions */}
         <div className="flex justify-center gap-4 my-8">
-          <Button label={`Like (${likes})`} styleType="primary" onClick={handleLike} />
+          <Button
+            label={likedByUser ? `Unlike (${likes})` : `Like (${likes})`}
+            styleType="primary"
+            onClick={handleLikeToggle}
+          />
           <div className="flex items-center">
             <input
               type="text"

@@ -98,6 +98,17 @@ export const commentOnBlog = async (id: string, comment: string): Promise<void> 
   }
 };
 
+export const unlikeBlog = async (id: string): Promise<number> => {
+  try {
+    const response = await apiClient.post(`/api/blog/${id}/unlike`);
+    return response.data.likes; // Return updated likes count
+  } catch (error) {
+    console.error("Error unliking blog:", error);
+    throw error;
+  }
+};
+
+
 export const editBlog = async (id: string, data: { title?: string; content?: string }): Promise<Blog> => {
   try {
     const response = await apiClient.put<Blog>(`/api/blog/${id}`, data);
