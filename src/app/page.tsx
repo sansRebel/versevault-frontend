@@ -83,9 +83,9 @@ export default function HomePage() {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
-        className="py-16 bg-base-100"
+        className="py-16 bg-base-100 text-center"
       >
-        <h2 className="text-4xl font-bold text-center mb-12" >Featured Blogs</h2>
+        <h2 className="text-4xl font-bold mb-12" >Featured Blogs</h2>
         <motion.div className="grid gap-8 px-6 md:grid-cols-3 max-w-6xl mx-auto">
           {safeBlogs.slice(0, 3).map((blog) => (
             <motion.div key={blog._id} variants={fadeIn}>

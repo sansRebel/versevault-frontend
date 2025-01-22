@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Button from "@/components/Button";
-import { fetchUserBlogs, deleteBlog } from "@/services/blogServices";
+import { fetchUserBlogs, deleteBlog, editBlog } from "@/services/blogServices";
+import { updateUser } from "@/services/userServices";
 import { Blog } from "@/types";
 import { getUserDetails, removeUserDetails } from "@/utils/user";
 import { removeToken } from "@/utils/token";
@@ -10,6 +11,7 @@ import { useRouter } from "next/navigation";
 import Card from "@/components/Card";
 import Toast from "@/components/Toast";
 import Modal from "@/components/Modal";
+import Form from "@/components/Form";
 import { useAuthActions } from "@/hooks/useAuth";
 import { AiOutlinePlus, AiOutlineEdit, AiOutlineLogout, AiOutlineDelete } from "react-icons/ai";
 
@@ -17,6 +19,8 @@ export default function ProfilePage() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [user, setUser] = useState<{ username: string; email: string } | null>(null);
+  const [isEditingAccount, setIsEditingAccount] = useState<boolean>(false); // State for account editing
+  const [isEditingBlog, setIsEditingBlog] = useState<Blog | null>(null); // State for blog editing
   const [modal, setModal] = useState<{ isOpen: boolean; title: string; message: string; onConfirm?: () => void } | null>(
     null
   );
@@ -58,6 +62,44 @@ export default function ProfilePage() {
 
     initializeUser();
   }, []);
+
+  const handleUpdateAccount = async (formData: { username?: string; email?: string; password?: string }) => {
+    try {
+      const updatedUser = await updateUser(formData);
+      if (updatedUser) {
+        setUser(updatedUser);
+        showToast("Account updated successfully.", "success");
+      } else {
+        showToast("Failed to update account.", "error");
+      }
+    } catch {
+      showToast("An error occurred while updating the account.", "error");
+    } finally {
+      setIsEditingAccount(false);
+    }
+  };
+
+  const handleEditBlog = (blog: Blog) => {
+    setIsEditingBlog(blog);
+  };
+
+  const handleUpdateBlog = async (formData: { title?: string; content?: string }) => {
+    if (!isEditingBlog) return;
+
+    try {
+      const updatedBlog = await editBlog(isEditingBlog._id, formData);
+      setBlogs((prevBlogs) =>
+        prevBlogs.map((blog) =>
+          blog._id === updatedBlog._id ? updatedBlog : blog
+        )
+      );
+      showToast("Blog updated successfully.", "success");
+    } catch {
+      showToast("Failed to update blog.", "error");
+    } finally {
+      setIsEditingBlog(null);
+    }
+  };
 
   const handleDeleteBlog = (id: string) => {
     openModal("Delete Blog", "Are you sure you want to delete this blog?", async () => {
@@ -112,40 +154,62 @@ export default function ProfilePage() {
 
         {/* User Information Card */}
         <div className="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md text-center mb-8">
-          <h1 className="text-3xl font-bold mb-2">{user.username}</h1>
-          <p className="text-lg text-gray-600 mb-4">{user.email}</p>
-          <div className="flex justify-center gap-4">
-            <Button
-              label={
-                <>
-                  <AiOutlineEdit /> Edit Account
-                </>
-              }
-              styleType="primary"
-              onClick={() => console.log("Edit account clicked")}
-            />
-            <Button
-              label={
-                <>
-                  <AiOutlineDelete /> Delete Account
-                </>
-              }
-              styleType="danger"
-              onClick={handleDeleteAccount}
-            />
-            <Button
-              label={
-                <>
-                  <AiOutlineLogout /> Sign Out
-                </>
-              }
-              styleType="secondary"
-              onClick={() => {
-                logoutUser();
-                router.push("/auth");
-              }}
-            />
-          </div>
+          {isEditingAccount ? (
+            <>
+              <h2 className="text-2xl font-bold mb-4">Edit Account</h2>
+              <Form
+                fields={[
+                  { name: "username", label: "Username", type: "text", value: user.username },
+                  { name: "email", label: "Email", type: "email", value: user.email },
+                  { name: "password", label: "Password", type: "password", placeholder: "Enter new password" },
+                ]}
+                onSubmit={handleUpdateAccount}
+                buttonText="Save Changes"
+              />
+              <Button
+                label="Cancel"
+                styleType="secondary"
+                onClick={() => setIsEditingAccount(false)}
+              />
+            </>
+          ) : (
+            <>
+              <h1 className="text-3xl font-bold mb-2">{user.username}</h1>
+              <p className="text-lg text-gray-600 mb-4">{user.email}</p>
+              <div className="flex justify-center gap-4">
+                <Button
+                  label={
+                    <>
+                      <AiOutlineEdit /> Edit Account
+                    </>
+                  }
+                  styleType="primary"
+                  onClick={() => setIsEditingAccount(true)}
+                />
+                <Button
+                  label={
+                    <>
+                      <AiOutlineDelete /> Delete Account
+                    </>
+                  }
+                  styleType="danger"
+                  onClick={handleDeleteAccount}
+                />
+                <Button
+                  label={
+                    <>
+                      <AiOutlineLogout /> Sign Out
+                    </>
+                  }
+                  styleType="secondary"
+                  onClick={() => {
+                    logoutUser();
+                    router.push("/auth");
+                  }}
+                />
+              </div>
+            </>
+          )}
         </div>
 
         {/* Post New Blog Button */}
@@ -160,6 +224,26 @@ export default function ProfilePage() {
             onClick={() => router.push("/blogs/new")}
           />
         </div>
+
+        {/* Blog Editing Form */}
+        {isEditingBlog && (
+          <div className="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md text-center mb-8">
+            <h2 className="text-2xl font-bold mb-4">Edit Blog</h2>
+            <Form
+              fields={[
+                { name: "title", label: "Title", type: "text", value: isEditingBlog.title },
+                { name: "content", label: "Content", type: "textarea", value: isEditingBlog.content },
+              ]}
+              onSubmit={handleUpdateBlog}
+              buttonText="Save Changes"
+            />
+            <Button
+              label="Cancel"
+              styleType="secondary"
+              onClick={() => setIsEditingBlog(null)}
+            />
+          </div>
+        )}
 
         {/* User Blogs */}
         <h2 className="text-2xl font-bold text-center mb-8">My Blogs</h2>
@@ -185,7 +269,7 @@ export default function ProfilePage() {
                       </>
                     }
                     styleType="primary"
-                    onClick={() => router.push(`/blogs/edit/${blog._id}`)}
+                    onClick={() => handleEditBlog(blog)}
                   />
                   <Button
                     label={

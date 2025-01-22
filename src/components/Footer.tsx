@@ -1,6 +1,6 @@
 "use client";
 
-import { FaFacebook, FaTwitter, FaYoutube } from "react-icons/fa";
+import { FaInstagram, FaLinkedin, FaGithub } from "react-icons/fa";
 
 export default function Footer() {
   return (
@@ -27,28 +27,28 @@ export default function Footer() {
         {/* Social Media Links */}
         <nav className="flex space-x-4 mt-4 md:mt-0">
           <a
-            href="#"
+            href="https://instagram.com/khaledalsanafi"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:scale-110 transition-transform duration-200"
           >
-            <FaFacebook className="w-6 h-6" />
+            <FaInstagram className="w-6 h-6" />
           </a>
           <a
-            href="#"
+            href="https://linkedin.com/in/khaled-al-sanafi-0251232a0"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:scale-110 transition-transform duration-200"
           >
-            <FaTwitter className="w-6 h-6" />
+            <FaLinkedin className="w-6 h-6" />
           </a>
           <a
-            href="#"
+            href="https://github.com/sansRebel"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:scale-110 transition-transform duration-200"
           >
-            <FaYoutube className="w-6 h-6" />
+            <FaGithub className="w-6 h-6" />
           </a>
         </nav>
       </div>

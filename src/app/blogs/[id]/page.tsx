@@ -200,9 +200,7 @@ export default function BlogDetailsPage() {
                   key={index}
                   className="p-4 bg-gray-100 rounded-lg shadow flex items-start"
                 >
-                  <div className="avatar mr-4">
-                    <div className="w-12 h-12 rounded-full bg-gray-300"></div>
-                  </div>
+
                   <div>
                     <p className="font-semibold">{comment.user}</p>
                     <p>{comment.content}</p>

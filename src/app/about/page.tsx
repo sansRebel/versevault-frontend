@@ -10,13 +10,13 @@ export default function AboutPage() {
       <section className="py-16 px-4 lg:px-24">
         {/* About and Professional Showcase Section */}
         <motion.section
-          className="mt-16 bg-gray-100 rounded-lg p-8 shadow-md"
+          className="mt-16 bg-gray-100 rounded-lg p-8 shadow-md text-center"
           variants={fadeIn}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
         >
-          <h2 className="text-4xl font-bold mb-6 text-center">About VerseVault</h2>
+          <h2 className="text-4xl font-bold mb-6" >About VerseVault</h2>
           <p className="text-lg text-gray-600 mb-6">
             VerseVault is more than just a blogging platform; it is a space for creativity, self-expression, and meaningful connections. Built as part of my final-year Software Engineering journey, this platform is designed to enable users to share their ideas, explore inspiring content, and engage with a vibrant community of thinkers, writers, and creators.
           </p>
