@@ -3,7 +3,7 @@
 import { ReactNode } from "react";
 
 type ButtonProps = {
-  label: string;
+  label: string | React.ReactNode;
   onClick?: () => void;
   type?: "button" | "submit" | "reset";
   styleType?: "primary" | "secondary" | "danger";

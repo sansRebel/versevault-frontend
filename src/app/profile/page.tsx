@@ -2,33 +2,31 @@
 
 import { useEffect, useState } from "react";
 import Button from "@/components/Button";
-import Form from "@/components/Form";
-import { fetchUserBlogs, editBlog, deleteBlog } from "@/services/blogServices";
+import { fetchUserBlogs, deleteBlog } from "@/services/blogServices";
 import { Blog } from "@/types";
 import { getUserDetails, removeUserDetails } from "@/utils/user";
 import { removeToken } from "@/utils/token";
 import { useRouter } from "next/navigation";
 import Card from "@/components/Card";
-import Toast from "@/components/Toast"; // Toast component
-import Modal from "@/components/Modal"; // Modal component
+import Toast from "@/components/Toast";
+import Modal from "@/components/Modal";
 import { useAuthActions } from "@/hooks/useAuth";
+import { AiOutlinePlus, AiOutlineEdit, AiOutlineLogout, AiOutlineDelete } from "react-icons/ai";
 
 export default function ProfilePage() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [user, setUser] = useState<{ username: string; email: string } | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editingBlog, setEditingBlog] = useState<Blog | null>(null);
   const [modal, setModal] = useState<{ isOpen: boolean; title: string; message: string; onConfirm?: () => void } | null>(
     null
   );
-  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null); // Toast state
+  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
   const router = useRouter();
-  const {logoutUser} =useAuthActions();
+  const { logoutUser } = useAuthActions();
 
   const showToast = (message: string, type: "success" | "error") => {
     setToast({ message, type });
-    setTimeout(() => setToast(null), 3000); // Hide toast after 3 seconds
+    setTimeout(() => setToast(null), 3000);
   };
 
   const openModal = (title: string, message: string, onConfirm?: () => void) => {
@@ -48,7 +46,7 @@ export default function ProfilePage() {
         try {
           const userBlogs = await fetchUserBlogs();
           setBlogs(userBlogs);
-        } catch  {
+        } catch {
           showToast("Failed to fetch blogs.", "error");
         } finally {
           setLoading(false);
@@ -61,40 +59,13 @@ export default function ProfilePage() {
     initializeUser();
   }, []);
 
-  const handleEditBlog = (blog: Blog) => {
-    setEditingBlog(blog);
-    setIsEditing(true);
-  };
-
-  const handleUpdateBlog = async (formData: { [key: string]: string }) => {
-    if (!editingBlog) return;
-
-    try {
-      const updatedBlog = await editBlog(editingBlog._id, {
-        title: formData.title,
-        content: formData.content,
-      });
-
-      setBlogs((prevBlogs) =>
-        prevBlogs.map((blog) =>
-          blog._id === updatedBlog._id ? updatedBlog : blog
-        )
-      );
-
-      showToast("Blog updated successfully.", "success");
-      setIsEditing(false);
-    } catch  {
-      showToast("Failed to update blog.", "error");
-    }
-  };
-
   const handleDeleteBlog = (id: string) => {
     openModal("Delete Blog", "Are you sure you want to delete this blog?", async () => {
       try {
         await deleteBlog(id);
         setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog._id !== id));
         showToast("Blog deleted successfully.", "success");
-      } catch  {
+      } catch {
         showToast("Failed to delete blog.", "error");
       } finally {
         closeModal();
@@ -105,12 +76,12 @@ export default function ProfilePage() {
   const handleDeleteAccount = () => {
     openModal("Delete Account", "Are you sure you want to delete your account? This action cannot be undone.", async () => {
       try {
-        // Implement account deletion logic
         removeToken();
         removeUserDetails();
+        logoutUser();
         router.push("/auth");
         showToast("Account deleted successfully.", "success");
-      } catch  {
+      } catch {
         showToast("Failed to delete account.", "error");
       } finally {
         closeModal();
@@ -123,12 +94,12 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-base-100">
+    <div className="min-h-screen bg-base-100 px-4 lg:px-8">
       <section className="py-8">
-        {/* Toast Component */}
+        {/* Toast Notifications */}
         {toast && <Toast message={toast.message} type={toast.type} />}
 
-        {/* Modal Component */}
+        {/* Modal */}
         {modal && (
           <Modal
             title={modal.title}
@@ -139,86 +110,101 @@ export default function ProfilePage() {
           />
         )}
 
-        {/* User Information */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-2">{user.username}</h1>
-          <p className="text-lg mb-4">{user.email}</p>
+        {/* User Information Card */}
+        <div className="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md text-center mb-8">
+          <h1 className="text-3xl font-bold mb-2">{user.username}</h1>
+          <p className="text-lg text-gray-600 mb-4">{user.email}</p>
           <div className="flex justify-center gap-4">
             <Button
-              label="Edit Account"
+              label={
+                <>
+                  <AiOutlineEdit /> Edit Account
+                </>
+              }
               styleType="primary"
               onClick={() => console.log("Edit account clicked")}
             />
             <Button
-              label="Delete Account"
+              label={
+                <>
+                  <AiOutlineDelete /> Delete Account
+                </>
+              }
               styleType="danger"
               onClick={handleDeleteAccount}
             />
             <Button
-              label="Sign Out"
+              label={
+                <>
+                  <AiOutlineLogout /> Sign Out
+                </>
+              }
               styleType="secondary"
               onClick={() => {
                 logoutUser();
-                router.push("/auth"); // Redirect to login page
+                router.push("/auth");
               }}
             />
           </div>
         </div>
 
-
-        {/* Edit Blog Form */}
-        {isEditing && editingBlog && (
-          <div className="max-w-md mx-auto mb-8">
-            <h2 className="text-2xl font-bold text-center mb-4">Edit Blog</h2>
-            <Form
-              fields={[
-                { name: "title", label: "Title", type: "text", value: editingBlog.title },
-                { name: "content", label: "Content", type: "textarea", value: editingBlog.content },
-              ]}
-              onSubmit={handleUpdateBlog}
-              buttonText="Save Changes"
-            />
-          </div>
-        )}
-
-
-
-        {/* User Blogs */}
-        <div>
-          <h2 className="text-2xl font-bold text-center mb-8">My Blogs</h2>
-          <div className="text-center mb-8">
-            <Button
-              label="Post a Blog"
-              styleType="primary"
-              onClick={() => (window.location.href = "/blogs/new")}
-            />
-          </div>
-          {loading ? (
-            <div className="text-center">Loading blogs...</div>
-          ) : blogs.length > 0 ? (
-            <div className="grid gap-8 px-4 sm:grid-cols-2 lg:grid-cols-3">
-              {blogs.map((blog) => (
-                <div key={blog._id}>
-                  <Card
-                    imageUrl={blog.imageUrl || "https://via.placeholder.com/150"}
-                    title={blog.title}
-                    description={blog.content.substring(0, 100) + "..."}
-                    onClick={() => (window.location.href = `/blogs/${blog._id}`)}
-                  />
-                  <div className="flex justify-end gap-2 mt-2">
-                    <Button label="Edit" styleType="primary" onClick={() => handleEditBlog(blog)} />
-                    <Button label="Delete" styleType="danger" onClick={() => handleDeleteBlog(blog._id)} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center">
-              <p className="mb-4">You havent posted any blogs yet.</p>
-            </div>
-          )}
+        {/* Post New Blog Button */}
+        <div className="text-center mb-8">
+          <Button
+            label={
+              <>
+                <AiOutlinePlus /> Post a Blog
+              </>
+            }
+            styleType="primary"
+            onClick={() => router.push("/blogs/new")}
+          />
         </div>
 
+        {/* User Blogs */}
+        <h2 className="text-2xl font-bold text-center mb-8">My Blogs</h2>
+        {loading ? (
+          <div className="flex justify-center items-center py-8">
+            <div className="w-10 h-10 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+          </div>
+        ) : blogs.length > 0 ? (
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {blogs.map((blog) => (
+              <div key={blog._id} className="bg-white rounded-lg shadow-md p-4">
+                <Card
+                  imageUrl={blog.imageUrl || "https://via.placeholder.com/150"}
+                  title={blog.title}
+                  description={blog.content.substring(0, 100) + "..."}
+                  onClick={() => router.push(`/blogs/${blog._id}`)}
+                />
+                <div className="flex justify-between gap-2 mt-4">
+                  <Button
+                    label={
+                      <>
+                        <AiOutlineEdit /> Edit
+                      </>
+                    }
+                    styleType="primary"
+                    onClick={() => router.push(`/blogs/edit/${blog._id}`)}
+                  />
+                  <Button
+                    label={
+                      <>
+                        <AiOutlineDelete /> Delete
+                      </>
+                    }
+                    styleType="danger"
+                    onClick={() => handleDeleteBlog(blog._id)}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center">
+            <p className="mb-4">You havent posted any blogs yet.</p>
+          </div>
+        )}
       </section>
     </div>
   );

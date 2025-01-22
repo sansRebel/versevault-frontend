@@ -21,7 +21,7 @@ export default function Toast({ message, type, duration = 3000 }: ToastProps) {
 
   return (
     <div
-      className={`fixed top-4 right-4 p-4 rounded-lg shadow-md transition-transform transform ${
+      className={`fixed bottom-4 right-4 p-4 rounded-lg shadow-md transition-transform transform ${
         type === "success"
           ? "bg-green-100 text-green-800"
           : type === "error"

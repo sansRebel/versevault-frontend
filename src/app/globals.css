@@ -23,6 +23,14 @@
 body {
   color: var(--foreground);
   background: var(--background-light);
-  font-family: 'Inter', Arial, sans-serif; /* Update with preferred font family */
+  font-family: "Quicksand", serif; 
   line-height: 1.6;
+}
+
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Manrope", serif;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
 }
