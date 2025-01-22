@@ -44,7 +44,7 @@ export default function AboutPage() {
           <div className="flex justify-center gap-8">
             {/* Gmail */}
             <a
-              href="mailto:your-email@example.com"
+              href="mailto:khaledalsinafi101@gmail.com"
               className="text-gray-600 hover:text-primary transition-transform transform hover:scale-110 duration-200"
               target="_blank"
               rel="noopener noreferrer"
@@ -54,7 +54,7 @@ export default function AboutPage() {
 
             {/* LinkedIn */}
             <a
-              href="https://linkedin.com/in/your-profile"
+              href="https://linkedin.com/in/khaled-al-sanafi-0251232a0"
               className="text-gray-600 hover:text-primary transition-transform transform hover:scale-110 duration-200"
               target="_blank"
               rel="noopener noreferrer"
@@ -64,12 +64,12 @@ export default function AboutPage() {
 
             {/* Instagram */}
             <a
-              href="https://instagram.com/your-profile"
+              href="https://instagram.com/khaledalsanafi"
               className="text-gray-600 hover:text-primary transition-transform transform hover:scale-110 duration-200"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <FaInstagram className="w-8 h-8" /> {/* Instagram Icon */}
+              <FaInstagram className="w-8 h-8" /> 
             </a>
           </div>
         </motion.section>

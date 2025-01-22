@@ -16,7 +16,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Quicksand:wght@300..700&display=swap" rel="stylesheet"/>
+        {/* Favicon Link */}
+        <link rel="icon" href="skull.ico" type="image/x-icon" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Quicksand:wght@300..700&display=swap"
+          rel="stylesheet"
+        />
       </head>
       <body className="bg-base-100 text-base-content">
         <AuthProvider>
