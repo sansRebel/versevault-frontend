@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import Button from "@/components/Button";
+import Button from '@/components/Button';
 
 type CardProps = {
   imageUrl: string;
@@ -11,24 +11,24 @@ type CardProps = {
 
 export default function Card({ imageUrl, title, description, onClick }: CardProps) {
   return (
-    <div className="card bg-white shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200 rounded-lg overflow-hidden">
+    <div className="group bg-[#1e1e1e] text-white rounded-xl overflow-hidden shadow-lg border border-gray-700 hover:border-purple-500 transition-all duration-300 hover:shadow-xl hover:scale-[1.015]">
       {/* Card Image */}
-      <figure>
-        <img src={imageUrl} alt={title} className="w-full h-48 object-cover" />
-      </figure>
+      <div className="aspect-video overflow-hidden">
+        <img
+          src={imageUrl}
+          alt={title}
+          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+      </div>
 
       {/* Card Body */}
-      <div className="card-body p-4">
-        <h2 className="card-title text-lg font-semibold text-gray-800">{title}</h2>
-        <p className="text-gray-600 mt-2">{description}</p>
+      <div className="p-5 flex flex-col gap-3">
+        <h2 className="text-xl font-semibold line-clamp-1">{title}</h2>
+        <p className="text-gray-300 text-sm line-clamp-3">{description}</p>
 
         {/* Card Actions */}
-        <div className="card-actions justify-end mt-4">
-          <Button
-            label="Read More"
-            styleType="primary"
-            onClick={onClick}
-          />
+        <div className="flex justify-end mt-2">
+          <Button label="Read More" styleType="primary" onClick={onClick} />
         </div>
       </div>
     </div>

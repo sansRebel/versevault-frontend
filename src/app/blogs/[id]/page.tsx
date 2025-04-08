@@ -89,7 +89,7 @@ export default function BlogDetailsPage() {
       await commentOnBlog(id as string, newComment.trim());
       setBlog((prevBlog) => ({
         ...prevBlog!,
-        comments: [...(prevBlog?.comments || []), { user: user.username, content: newComment.trim() }],
+        comments: [...(prevBlog?.comments || []), { username: user.username, comment: newComment.trim() }],
       }));
       setNewComment("");
     } catch {
@@ -122,7 +122,7 @@ export default function BlogDetailsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-800">
+    <div className="min-h-screen bg-base-200 text-gray-800">
       {/* Modal */}
       {modal && (
         <Modal
@@ -140,7 +140,9 @@ export default function BlogDetailsPage() {
       <section className="container mx-auto max-w-4xl px-4 py-8">
         {/* Blog Header */}
         <header className="text-center mb-12">
-          <h1 className="text-4xl sm:text-5xl font-extrabold mb-6">{blog.title}</h1>
+        <h1 className="text-4xl sm:text-5xl font-extrabold mb-6 text-base-content">
+          {blog.title}
+        </h1>
           {blog.imageUrl && (
             <img
               src={blog.imageUrl}
@@ -152,8 +154,8 @@ export default function BlogDetailsPage() {
 
         {/* Blog Content */}
         <article className="px-4 sm:px-8">
-          <p className="text-lg leading-8 mb-8">{blog.content}</p>
-          <p className="text-lg text-gray-600">
+          <p className="text-lg leading-8 mb-8 text-base-content">{blog.content}</p>
+          <p className="text-lg text-base-content ">
             Author: <strong>{blog.author}</strong>
           </p>
         </article>
@@ -176,7 +178,7 @@ export default function BlogDetailsPage() {
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
               placeholder="Write a comment..."
-              className="input input-bordered w-full max-w-md mr-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="input input-bordered w-full max-w-md mr-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-base-content"
             />
             <Button
               label={
@@ -192,18 +194,18 @@ export default function BlogDetailsPage() {
 
         {/* Comments Section */}
         <section className="px-4 sm:px-8">
-          <h2 className="text-2xl font-bold mb-4">Comments</h2>
+          <h2 className="text-2xl font-bold mb-4 text-base-content">Comments</h2>
           {blog.comments && blog.comments.length > 0 ? (
             <div className="space-y-4">
               {blog.comments.map((comment, index) => (
                 <div
                   key={index}
-                  className="p-4 bg-gray-100 rounded-lg shadow flex items-start"
+                  className="p-4 bg-base-100 rounded-lg shadow flex items-start"
                 >
 
                   <div>
-                    <p className="font-semibold">{comment.user}</p>
-                    <p>{comment.content}</p>
+                    <p className="font-semibold text-base-content">{comment.username}</p>
+                    <p className="text-base-content">{comment.comment}</p>
                   </div>
                 </div>
               ))}

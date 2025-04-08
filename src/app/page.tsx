@@ -56,7 +56,7 @@ export default function HomePage() {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
-        className="py-16 bg-gray-100 text-center"
+        className="py-16 bg-base-200 text-center"
       >
         <h2 className="text-4xl font-bold mb-12">Features</h2>
         <motion.div
@@ -67,8 +67,8 @@ export default function HomePage() {
             <motion.div
               key={index}
               variants={fadeIn}
-              className="p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow"
-            >
+              className="p-6 bg-base-100 rounded-lg shadow-md hover:shadow-lg transition-shadow"
+              >
               <div className="text-4xl mb-4">{feature.icon}</div>
               <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
               <p className="text-gray-600">{feature.description}</p>
@@ -83,7 +83,7 @@ export default function HomePage() {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
-        className="py-16 bg-base-100 text-center"
+        className="py-16 bg-base-200 text-center"
       >
         <h2 className="text-4xl font-bold mb-12" >Featured Blogs</h2>
         <motion.div className="grid gap-8 px-6 md:grid-cols-3 max-w-6xl mx-auto">
